@@ -1,0 +1,23 @@
+# TODO: Create new branch for Gabriel to test
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clickhouse-server-deployment
+  labels:
+    app: clickhouse-server
+spec:
+  selector:
+    matchLabels:
+      app: clickhouse-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: clickhouse-server
+    spec:
+      containers:
+      - name: clickhouse-server
+        image: clickhouse/clickhouse-server:latest
+        ports:
+        - containerPort: 8123
+        - containerPort: 9000

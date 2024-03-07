@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: substreams-sink-sql-deployment
+  labels:
+    app: substreams-sink-sql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: substreams-sink-sql
+  template:
+    metadata:
+      labels:
+        app: substreams-sink-sql
+    spec:
+      initContainers:
+      # TODO: run only once, create an init flag
+      - name: init-container
+        image: ghcr.io/streamingfast/substreams-sink-sql:latest
+        command: ["substreams-sink-sql", "setup", "clickhouse://default@clickhouse-server-service.clickhouse-server:9000/default", "https://github.com/syeadz/test/releases/download/test/substreams-postgresql-sink-tutorial-v0.1.0.spkg"]
+      containers:
+      - name: substreams-sink-sql
+        image: ghcr.io/streamingfast/substreams-sink-sql:latest
+        command: ["substreams-sink-sql", "run", "clickhouse://default@clickhouse-server-service.clickhouse-server:9000/default", "https://github.com/syeadz/test/releases/download/test/substreams-postgresql-sink-tutorial-v0.1.0.spkg", "-e", "eth.substreams.pinax.network:443", "--undo-buffer-size=12"]
+        env:
+        - name: STREAMINGFAST_KEY
+          value: ""
+        - name: SUBSTREAMS_API_TOKEN
+          value: ""
